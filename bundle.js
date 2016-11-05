@@ -1,7 +1,850 @@
-!function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){e.exports=n(4)},function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});t.KEYBOARD_NAME={37:"left",38:"up",39:"right",40:"down"},t.SCORE_POINT=[0,100,500,1e3,2e3],t.COL=10,t.ROW=20,t.HIDDEN_ROW=4,t.INITIAL_DURATION=1e3,t.DECREASE_DURATION_FACTOR=4.5,t.BRICK_TYPES=7},function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var n={"-1":[[[]]],0:[[[0,-1],[1,-1],[0,0],[1,0]],[[0,-1],[1,-1],[0,0],[1,0]],[[0,-1],[1,-1],[0,0],[1,0]],[[0,-1],[1,-1],[0,0],[1,0]]],1:[[[0,-1],[-1,0],[0,0],[1,0]],[[0,-2],[0,-1],[1,-1],[0,0]],[[-1,-1],[0,-1],[1,-1],[0,0]],[[0,-2],[-1,-1],[0,-1],[0,0]]],2:[[[1,-1],[0,0],[1,0],[0,1]],[[-1,-1],[0,-1],[0,0],[1,0]],[[1,-1],[0,0],[1,0],[0,1]],[[-1,-1],[0,-1],[0,0],[1,0]]],3:[[[0,-1],[0,0],[1,0],[1,1]],[[0,-1],[1,-1],[-1,0],[0,0]],[[0,-1],[0,0],[1,0],[1,1]],[[0,-1],[1,-1],[-1,0],[0,0]]],4:[[[0,-2],[0,-1],[0,0],[0,1]],[[-2,0],[-1,0],[0,0],[1,0]],[[0,-2],[0,-1],[0,0],[0,1]],[[-2,0],[-1,0],[0,0],[1,0]]],5:[[[-1,-1],[-1,0],[0,0],[1,0]],[[0,-1],[1,-1],[0,0],[0,1]],[[-1,0],[0,0],[1,0],[1,1]],[[0,-1],[0,0],[-1,1],[0,1]]],6:[[[1,-1],[-1,0],[0,0],[1,0]],[[0,-1],[0,0],[0,1],[1,1]],[[-1,0],[0,0],[1,0],[-1,1]],[[-1,-1],[0,-1],[0,0],[0,1]]],7:[[[-1,0],,[1,0],[0,1],[1,1]],[[0,-1],[-1,0],[-1,1],[0,1]],[[-1,-1],[0,-1],[-1,0],[1,0]],[[0,-1],[1,-1],[1,0],[0,1]]],8:[[[-1,0],,[1,0],[-1,1],[0,1]],[[-1,-1],[0,-1],[-1,0],[0,1]],[[0,-1],[1,-1],[-1,0],[1,0]],[[0,-1],[1,0],[0,1],[1,1]]]};t.default=n},function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},r=function(e){return e<10?"0"+e:e};t.getTime=function(e){var t=Math.floor(e/60),n=e%60;return r(t)+":"+r(n)},t.localStorageCtrl={getItem:function(e){var t=localStorage.getItem(e);return JSON.parse(t)},setItem:function(e,t){localStorage.setItem(e,"object"===("undefined"==typeof t?"undefined":n(t))?JSON.stringify(t):t)},removeItem:function(e){localStorage.removeItem(e)}}},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();n(12);var a=n(8),s=r(a),u=n(5),c=r(u),l=n(6),f=r(l),d=function(){function e(){i(this,e),this.play=new s.default(this.renderScore.bind(this)),this.modal=null,this.modalEvents=[],this.modalDom=document.getElementById("modal"),this.renderModal({Class:c.default,callback:this.renderScore.bind(this)})}return o(e,[{key:"renderModal",value:function(e){var t=e.Class,n=e.callback,r=e.item,i=e.startName;this.removeModal(),this.modal=new t(this.play.startGame,n),this.modalDom.innerHTML=this.modal.getModalTemplate(r,i),this.registerModalEvents()}},{key:"renderScore",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:null,n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:"Play Game";this.renderModal({Class:f.default,callback:null,item:t,startName:n})}},{key:"registerModalEvents",value:function(){var e=this;this.modalEvents=this.modal.events.map(function(t){var n=t.target,r=void 0===n?window:n,i=t.name,o=t.callback,a=t.isClose;return a?{target:r,name:i,callback:function(){o(),e.removeModal()}}:{target:r,name:i,callback:o}}),this.modalEvents.forEach(function(e){var t=e.target,n=e.name,r=e.callback;if(t)if("string"==typeof t){var i=document.querySelector(t);i&&i.addEventListener(n,r)}else t.addEventListener(n,r)})}},{key:"removeModal",value:function(){this.modalEvents&&this.modalEvents.forEach(function(e){var t=e.target,n=e.name,r=e.callback;if(t)if("string"==typeof t){var i=document.querySelector(t);i&&i.removeEventListener(n,r)}else t.removeEventListener(n,r)}),this.modal=null,this.modalEvents=null,this.modalDom.innerHTML=""}}]),e}();new d},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),i=function(){function e(t,r){n(this,e),this.events=[{target:"#startGame",name:"click",callback:t,isClose:!0},{target:"#showScoreModal",name:"click",callback:r,isClose:!1}]}return r(e,[{key:"getModalTemplate",value:function(){return'<div class="modal-wrap">\n    <div class="modal modal--home">\n        <h3>TETRIS!</h3>\n        <p>by gomugom</p>\n        <div class="modal__footer">\n            <button id="showScoreModal">Rank</button>\n            <button id="startGame">Start Game</button>\n        </div>\n    </div>\n</div>'}}]),e}();t.default=i},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var i=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),a=n(3),s=function(){function e(t,n,i){r(this,e),this.scoreList=a.localStorageCtrl.getItem("tetrisScores")||[],this.events=[{target:"#start",name:"click",callback:t,isClose:!0},{target:"#userName",name:"keydown",callback:this.saveUser.bind(this),isClose:!1}],this.getModalTemplate=this.getModalTemplate.bind(this)}return o(e,[{key:"saveUser",value:function(e){if(13===e.keyCode&&e.target.value.length){e.target.removeEventListener("keydown",this.saveUser);var t=JSON.parse(e.target.dataset.info),n={name:e.target.value,score:t.score,time:t.time};this.scoreList.splice(t.index,1,n),this.scoreList=this.scoreList.sort(function(e,t){return t.score-e.score}),a.localStorageCtrl.setItem("tetrisScores",this.scoreList),document.getElementById("scoreList").innerHTML=this.getScoreList()}}},{key:"getScoreList",value:function(e){e&&this.scoreList.push(i({name:""},e));var t=this.scoreList.sort(function(e,t){return t.score-e.score}).slice(0,10).reduce(function(e,t,n){var r=t.name,i=t.score,o=t.time;t.count;return e+"\n            <tr>\n                <td>"+(n+1)+"</td>\n                <td>"+i+"</td>\n                <td>"+(r?r:'<input id="userName" autofocus="true" type="text" data-info=\'{"index": '+n+', "score":'+i+', "time":'+o+"}'/>")+"</td>\n                <td>"+(0,a.getTime)(o)+"</td>\n            </tr>"},"");return t}},{key:"getModalTemplate",value:function(e,t){var n=this.getScoreList(e);return'<div class="modal-wrap">\n    <div class="modal modal--score">\n        <h3>RANKING TOP 10</h3>\n        <table>\n            <colgroup>\n                <col style="width:10%" />\n                <col style="width:30%" />\n                <col style="width:40%" />\n                <col style="width:20%" />\n            </colgroup>\n            <thead>\n                <tr>\n                    <th>No.</th>\n                    <th>Score</th>\n                    <th>Name</th>\n                    <th>Time</th>\n                </tr>\n            </thead>\n            <tbody id="scoreList">\n                '+n+'\n            </tbody>\n        </table>\n        <div class="modal__footer">\n            <button id="start">'+(t||"TRY AGAIN")+"</button>\n        </div>\n    </div>\n</div>"}}]),e}();t.default=s},function(e,t,n){"use strict";function r(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function i(e){return e&&e.__esModule?e:{default:e}}function o(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}function a(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(2),c=i(u),l=n(1),f=r(l),d=function(){function e(t){a(this,e),this.info={type:t,rotate:0,shape:c.default[t],offset:[Math.floor(f.COL/2)-1,f.HIDDEN_ROW-1]},this.setPos(0,0)}return s(e,[{key:"setPos",value:function(e,t){var n=this;this.info.offset=[this.info.offset[0]+e,this.info.offset[1]+t],this.pos=this.info.shape[this.info.rotate].map(function(e){return[e[0]+n.info.offset[0],e[1]+n.info.offset[1]]})}},{key:"rotate",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"cw";this.info.rotate=(this.info.rotate+("cw"===e?1:3))%4,this.setPos(0,0)}},{key:"isAvailable",value:function(e){return this.pos.every(function(t){return t[0]>=0&&t[0]<f.COL&&t[1]>=0&&t[1]<f.ROW+f.HIDDEN_ROW&&null===e[t[1]][t[0]].type})}},{key:"move",value:function(e,t){var n=[];if("up"===e)return this.rotate("cw"),this.isAvailable(t)||this.rotate("ccw"),!1;switch(e){case"left":n=[-1,0];break;case"right":n=[1,0];break;case"down":n=[0,1]}this.setPos.apply(this,o(n));var r=this.isAvailable(t);return!r&&(this.setPos.apply(this,o(n.map(function(e){return e*-1}))),"down"===e)}}]),e}();t.default=d},function(e,t,n){"use strict";function r(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function i(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function a(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(9),c=i(u),l=n(10),f=i(l),d=n(7),h=i(d),v=n(3),m=n(1),y=r(m),p=[].concat(a("0".repeat(y.COL))).map(function(e){return{type:null}}),b=function(){function e(t){o(this,e),this.dom={main:document.getElementById("main"),score:document.getElementById("score"),count:document.getElementById("count"),time:document.getElementById("time"),next:document.getElementById("next")},this.startGame=this.startGame.bind(this),this.endCallback=t,this.endGame=this.endGame.bind(this),this.keyEventHandler=this.keyEventHandler.bind(this),this.renderPlayTime=this.renderPlayTime.bind(this),this.moveDown=this.moveDown.bind(this),this.resetGame(),this.keyState={},this.fireUp=!1}return s(e,[{key:"resetGame",value:function(){this.speed=1,this.score=0,this.count=0,this.time=0,this.keyEventWatchTimer=null,this.moveTimer=null,this.playTimer=null,this.brick=null,this.bg=u.defaultBg.map(function(e){return[].concat(a(e))}),this.dom.next.innerHTML=(0,f.default)(-1),this.dom.main.innerHTML=(0,c.default)(this.bg),this.dom.time.innerText=(0,v.getTime)(this.time),this.dom.score.innerText=this.score,this.dom.count.innerText=this.count}},{key:"startGame",value:function(){this.resetGame(),this.nextBrickIndex=Math.floor(Math.random()*y.BRICK_TYPES),this.addNewBrick(),this.playTimer=setInterval(this.renderPlayTime,1e3),this.keyEventWatchTimer=setInterval(this.keyEventHandler,75),window.addEventListener("keydown",this.keyEventListener.bind(this),!0),window.addEventListener("keyup",this.keyEventListener.bind(this),!0)}},{key:"keyEventListener",value:function(e){var t=!1;"keydown"===e.type&&(t=!0);var n=e.keyCode||e.which;this.keyState[n]=t,t||"up"!==y.KEYBOARD_NAME[n]||(this.fireUp=!1)}},{key:"keyEventHandler",value:function(){var e=this,t=Object.keys(this.keyState);t.forEach(function(t){if(e.keyState[t]){var n=y.KEYBOARD_NAME[t];switch(n){case"down":return void e.moveDown();case"left":case"right":return e.removeBrick(),e.brick.move(n,e.bg),void e.renderMain();case"up":return void(e.fireUp||(e.fireUp=!0,e.removeBrick(),e.brick.move(n,e.bg),e.renderMain()))}}})}},{key:"endGame",value:function(){window.removeEventListener("keydown",this.keyEventListener),window.removeEventListener("keyup",this.keyEventListener),clearInterval(this.playTimer),clearInterval(this.moveTimer),clearInterval(this.keyEventWatchTimer),this.brick=null,this.endCallback(null,{score:this.score,time:this.time,count:this.count},"TRY AGAIN")}},{key:"renderMain",value:function(){this.showBrick(),this.dom.main.innerHTML=(0,c.default)(this.bg)}},{key:"renderPlayTime",value:function(){this.dom.time.innerText=(0,v.getTime)(++this.time)}},{key:"renderScore",value:function(){this.speed=Math.ceil((this.count||1)/10),this.dom.count.innerText=this.count,this.dom.score.innerText=this.score}},{key:"renderNext",value:function(){this.dom.next.innerHTML=(0,f.default)(this.nextBrickIndex)}},{key:"addNewBrick",value:function(){clearInterval(this.moveTimer);var e=Math.floor(y.INITIAL_DURATION*(1-Math.log(this.speed)/y.DECREASE_DURATION_FACTOR));this.moveTimer=setInterval(this.moveDown,e),this.brick=new h.default(this.nextBrickIndex),this.nextBrickIndex=Math.floor(Math.random()*y.BRICK_TYPES),this.renderMain(),this.renderNext()}},{key:"removeCompleted",value:function(){var e=0,t=this.bg.filter(function(t,n){return!t.every(function(e){return null!==e.type})||(e+=1,!1)});this.score+=y.SCORE_POINT[e],this.count+=e,this.renderScore(),this.bg=[].concat(a("0".repeat(e))).map(function(){return[].concat(a("0".repeat(y.COL))).map(function(){return{type:null}})}).concat(t)}},{key:"moveEnd",value:function(){return this.removeCompleted(),this.brick.pos.some(function(e){return e[1]<=y.HIDDEN_ROW&&e[0]>=2&&e[0]<6})?void this.endGame():(this.bg=this.bg.map(function(e,t){return t>=y.HIDDEN_ROW?e:[].concat(a(p))}),void this.addNewBrick())}},{key:"moveDown",value:function(){this.removeBrick();var e=this.brick.move("down",this.bg);this.renderMain(),e&&this.moveEnd()}},{key:"removeBrick",value:function(){var e=this;this.brick.pos.forEach(function(t){e.bg[t[1]]&&e.bg[t[1]][t[0]]&&(e.bg[t[1]][t[0]]={type:null})})}},{key:"showBrick",value:function(){var e=this;this.brick.pos.forEach(function(t){e.bg[t[1]]&&e.bg[t[1]][t[0]]&&(e.bg[t[1]][t[0]]={type:e.brick.info.type})})}}]),e}();t.default=b},function(e,t,n){"use strict";function r(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function i(e){return e&&e.__esModule?e:{default:e}}function o(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}function a(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}Object.defineProperty(t,"__esModule",{value:!0}),t.defaultBg=void 0;var s=n(11),u=i(s),c=n(1),l=r(c),f=function(e){return'<div class="tetris__grid">\n    '+e.reduce(function(e,t,n){return""+e+t.reduce(function(e,t,r){var i;return e+'<div class="'+(0,u.default)("tetris__col",(i={},a(i,"type"+t.type,Number.isFinite(t.type)),a(i,"hidden",n<l.HIDDEN_ROW),i))+'"></div>'},"")},"")+"\n    </div>\n"};t.default=f;t.defaultBg=[].concat(o("0".repeat(l.ROW+l.HIDDEN_ROW))).map(function(e){return[].concat(o("0".repeat(l.COL))).map(function(e){return{type:null}})})},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}Object.defineProperty(t,"__esModule",{value:!0});var o=n(2),a=r(o),s=function(){return[].concat(i("0".repeat(4))).map(function(){return[].concat(i("0".repeat(4))).map(function(){return'<div class="tetris__col"></div>'})})},u=function(e){var t=a.default[e][0].map(function(e){return[e[0]+1,e[1]+2]}),n=s();return e>-1&&t.forEach(function(t){return n[t[1]][t[0]]='<div class="tetris__col type'+e+'"></div>'}),n.reduce(function(e,t){return""+e+t.reduce(function(e,t){return""+e+t},"")},"")};t.default=u},function(e,t,n){var r,i;/*!
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(6);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	const KEYBOARD_NAME = {
+	    37: 'left',
+	    38: 'up',
+	    39: 'right',
+	    40: 'down'
+	};
+	
+	const SCORE_POINT = [0, 100, 500, 1000, 2000];
+	
+	const COL = 10;
+	const ROW = 20;
+	const HIDDEN_ROW = 4;
+	
+	const INITIAL_DURATION = 1000;
+	const DECREASE_DURATION_FACTOR = 4.5;
+	const BRICK_TYPES = 7;
+	
+	module.exports = {
+	    KEYBOARD_NAME,
+	    SCORE_POINT,
+	    COL,
+	    ROW,
+	    HIDDEN_ROW,
+	    INITIAL_DURATION,
+	    DECREASE_DURATION_FACTOR,
+	    BRICK_TYPES
+	}
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	const types = {
+	    '-1': [ // 빈 값
+	        [
+	            []
+	        ]
+	    ],
+	    0: [
+	        [
+	            [0, -1], [1, -1],
+	            [0, 0],  [1, 0]
+	        ], [
+	            [0, -1], [1, -1],
+	            [0, 0],  [1, 0]
+	        ], [
+	            [0, -1], [1, -1],
+	            [0, 0],  [1, 0]
+	        ], [
+	            [0, -1], [1, -1],
+	            [0, 0],  [1, 0]
+	        ]
+	    ],
+	    1: [
+	        [
+	                    [0, -1],
+	            [-1, 0], [0, 0], [1, 0]
+	        ], [
+	                    [0, -2],
+	                    [0, -1], [1, -1],
+	                    [0, 0]
+	        ], [
+	            [-1, -1], [0, -1], [1, -1],
+	                    [0, 0]
+	        ], [
+	                    [0, -2],
+	            [-1, -1], [0, -1],
+	                    [0, 0]
+	        ]
+	    ],
+	    2: [
+	        [
+	                            [1, -1],
+	                    [0, 0], [1, 0],
+	                    [0, 1]
+	        ], [
+	            [-1, -1], [0, -1],
+	                      [0, 0], [1, 0]
+	        ], [
+	                            [1, -1],
+	                    [0, 0], [1, 0],
+	                    [0, 1]
+	        ], [
+	            [-1, -1], [0, -1],
+	                      [0, 0], [1, 0]
+	        ]
+	    ],
+	    3: [
+	        [
+	                    [0, -1],
+	                    [0, 0], [1, 0],
+	                             [1, 1]
+	        ], [
+	                    [0, -1], [1, -1],
+	            [-1, 0], [0, 0]
+	        ], [
+	                    [0, -1],
+	                    [0, 0], [1, 0],
+	                             [1, 1]
+	        ], [
+	                    [0, -1], [1, -1],
+	            [-1, 0], [0, 0]
+	        ]
+	    ],
+	    4: [
+	        [
+	                              [0, -2],
+	                              [0, -1],
+	                              [0, 0],
+	                              [0, 1]
+	        ], [
+	            [-2, 0], [-1, 0], [0, 0], [1, 0]
+	        ], [
+	                              [0, -2],
+	                              [0, -1],
+	                              [0, 0],
+	                              [0, 1]
+	        ], [
+	            [-2, 0], [-1, 0], [0, 0], [1, 0]
+	        ]
+	    ],
+	    5: [
+	        [
+	
+	            [-1, -1],
+	            [-1, 0], [0, 0], [1, 0]
+	        ], [
+	                    [0, -1], [1, -1],
+	                    [0, 0],
+	                    [0, 1]
+	        ], [
+	            [-1, 0], [0, 0], [1, 0],
+	                             [1, 1]
+	        ], [
+	                     [0, -1],
+	                     [0, 0],
+	            [-1, 1], [0, 1]
+	        ]
+	    ],
+	    6: [
+	        [
+	
+	                             [1, -1],
+	            [-1, 0], [0, 0], [1, 0]
+	        ], [
+	                    [0, -1],
+	                    [0, 0],
+	                    [0, 1], [1, 1]
+	        ], [
+	            [-1, 0], [0, 0], [1, 0],
+	            [-1, 1]
+	        ], [
+	            [-1, -1], [0, -1],
+	                      [0, 0],
+	                      [0, 1]
+	        ]
+	    ],
+	    7: [
+	        [
+	            [-1, 0],       , [1, 0],
+	                     [0, 1], [1, 1]
+	        ], [
+	                    [0, -1],
+	            [-1, 0],
+	            [-1, 1], [0, 1]
+	        ], [
+	            [-1, -1], [0, -1],
+	            [-1, 0],          [1, 0]
+	        ], [
+	                    [0, -1], [1, -1],
+	                             [1,  0],
+	                    [0, 1]
+	        ]
+	    ],
+	    8: [
+	        [
+	            [-1, 0],       , [1, 0],
+	            [-1, 1], [0, 1]
+	        ], [
+	            [-1, -1], [0, -1],
+	            [-1, 0],
+	                      [0, 1]
+	        ], [
+	                      [0, -1], [1, -1],
+	            [-1, 0],           [1, 0]
+	        ], [
+	                    [0, -1],
+	                             [1,  0],
+	                    [0, 1],  [1,  1]
+	        ]
+	    ]
+	};
+	
+	module.exports = types;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	const getDigit = num => (num < 10) ? '0' + num : num;
+	
+	const getTime = time => {
+	    const minute = Math.floor(time / 60);
+	    const second = time % 60;
+	    return getDigit(minute) + ':' + getDigit(second);
+	}
+	
+	const localStorageCtrl = {
+		getItem(keyName) {
+			const value = localStorage.getItem(keyName);
+			return JSON.parse(value);
+		},
+		setItem(keyName, value) {
+			localStorage.setItem(keyName, (typeof value === 'object') ? JSON.stringify(value) : value);
+		},
+		removeItem(item) {
+			localStorage.removeItem(item);
+		}
+	}
+	
+	module.exports = {
+	    getTime,
+	    localStorageCtrl
+	}
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	  Copyright (c) 2016 Jed Watson.
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
-!function(){"use strict";function n(){for(var e=[],t=0;t<arguments.length;t++){var r=arguments[t];if(r){var i=typeof r;if("string"===i||"number"===i)e.push(r);else if(Array.isArray(r))e.push(n.apply(null,r));else if("object"===i)for(var a in r)o.call(r,a)&&r[a]&&e.push(a)}}return e.join(" ")}var o={}.hasOwnProperty;"undefined"!=typeof e&&e.exports?e.exports=n:(r=[],i=function(){return n}.apply(t,r),!(void 0!==i&&(e.exports=i)))}()},function(e,t){}]);
+	/* global define */
+	
+	(function () {
+		'use strict';
+	
+		var hasOwn = {}.hasOwnProperty;
+	
+		function classNames () {
+			var classes = [];
+	
+			for (var i = 0; i < arguments.length; i++) {
+				var arg = arguments[i];
+				if (!arg) continue;
+	
+				var argType = typeof arg;
+	
+				if (argType === 'string' || argType === 'number') {
+					classes.push(arg);
+				} else if (Array.isArray(arg)) {
+					classes.push(classNames.apply(null, arg));
+				} else if (argType === 'object') {
+					for (var key in arg) {
+						if (hasOwn.call(arg, key) && arg[key]) {
+							classes.push(key);
+						}
+					}
+				}
+			}
+	
+			return classes.join(' ');
+		}
+	
+		if (typeof module !== 'undefined' && module.exports) {
+			module.exports = classNames;
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return classNames;
+			}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			window.classNames = classNames;
+		}
+	}());
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const Play = __webpack_require__(10);
+	const Home = __webpack_require__(7);
+	const Score = __webpack_require__(8);
+	__webpack_require__(5);
+	
+	class Main {
+	    constructor() {
+	        this.play = new Play(this.renderScore.bind(this));
+	        this.modal = null;
+	        this.modalEvents = [];
+	        this.modalDom = document.getElementById('modal');
+	        this.renderModal({
+	            Class: Home,
+	            callback: this.renderScore.bind(this)
+	        });
+	    }
+	
+	    renderModal({Class, callback, item, startName}) {
+	        this.removeModal();
+	        this.modal = new Class(this.play.startGame, callback);
+	        this.modalDom.innerHTML = this.modal.getModalTemplate(item, startName);
+	        this.registerModalEvents();
+	    }
+	
+	    renderScore(e, item = null, startName = 'Play Game') {
+	        this.renderModal({
+	            Class: Score,
+	            callback: null,
+	            item: item,
+	            startName: startName
+	        });
+	    }
+	
+	    registerModalEvents() {
+	        this.modalEvents = this.modal.events.map(({target = window, name, callback, isClose}) => {
+	            if(isClose) {
+	                return {target, name, callback: ()=> {
+	                    callback();
+	                    this.removeModal();
+	                }}
+	            }
+	            return {target, name, callback}
+	        });
+	        this.modalEvents.forEach(({target, name, callback}) => {
+	            if(target) {
+	                if(typeof target === 'string') {
+	                    const tg = document.querySelector(target);
+	                    if(tg) tg.addEventListener(name, callback);
+	                }
+	                else target.addEventListener(name, callback)
+	            }
+	        });
+	    }
+	
+	    removeModal() {
+	        this.modalEvents && this.modalEvents.forEach(({target, name, callback}) => {
+	            if(target) {
+	                if(typeof target === 'string') {
+	                    const tg = document.querySelector(target);
+	                    if(tg) tg.removeEventListener(name, callback);
+	                }
+	                else target.removeEventListener(name, callback);
+	            }
+	        });
+	        this.modal = null;
+	        this.modalEvents = null;
+	        this.modalDom.innerHTML = '';
+	    }
+	}
+	
+	new Main();
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	class Home {
+	    constructor(startGame, callback) {
+	        this.events = [{
+	            target: '#startGame',
+	            name: 'click',
+	            callback: startGame,
+	            isClose: true
+	        }, {
+	            target: '#showScoreModal',
+	            name: 'click',
+	            callback: callback,
+	            isClose: false
+	        }];
+	    }
+	    getModalTemplate() {
+	return `<div class="modal-wrap">
+	    <div class="modal modal--home">
+	        <h3>TETRIS!</h3>
+	        <p>by gomugom</p>
+	        <div class="modal__footer">
+	            <button id="showScoreModal">Rank</button>
+	            <button id="startGame">Start Game</button>
+	        </div>
+	    </div>
+	</div>`;
+	    }
+	}
+	
+	module.exports = Home;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const { localStorageCtrl, getTime } = __webpack_require__(3);
+	
+	class Score {
+	    constructor(startGame, callback, startName) {
+	        this.scoreList = localStorageCtrl.getItem('tetrisScores') || [];
+	        this.events = [{
+	            target: '#start',
+	            name: 'click',
+	            callback: startGame,
+	            isClose: true
+	        }, {
+	            target: '#userName',
+	            name: 'keydown',
+	            callback: this.saveUser.bind(this),
+	            isClose: false
+	        }];
+	        this.getModalTemplate = this.getModalTemplate.bind(this);
+	    }
+	    saveUser(e) {
+	        if(e.keyCode === 13 && e.target.value.length) {
+	            e.target.removeEventListener('keydown', this.saveUser);
+	            const data = JSON.parse(e.target.dataset.info);
+	            const userData = {
+	                name: e.target.value,
+	                score: data.score,
+	                time: data.time
+	            };
+	            this.scoreList.splice(data.index, 1, userData);
+	            this.scoreList = this.scoreList.sort((a,b)=> b.score - a.score);
+	            localStorageCtrl.setItem('tetrisScores', this.scoreList);
+	            document.getElementById('scoreList').innerHTML = this.getScoreList();
+	        }
+	    }
+	    getScoreList(item) {
+	        if(item) this.scoreList.push(Object.assign({name: ''}, item ));
+	        const scores = this.scoreList.sort((a,b)=> b.score - a.score).slice(0, 10).reduce((list, {name, score, time, count}, i) =>
+	            `${list}
+	            <tr>
+	                <td>${i+1}</td>
+	                <td>${score}</td>
+	                <td>${name ? name : `<input id="userName" autofocus="true" type="text" data-info='{"index": ${i}, "score":${score}, "time":${time}}'/>`}</td>
+	                <td>${getTime(time)}</td>
+	            </tr>`
+	        , '');
+	        return scores;
+	    }
+	    getModalTemplate(item, startName) {
+	        const scores = this.getScoreList(item);
+	return `<div class="modal-wrap">
+	    <div class="modal modal--score">
+	        <h3>RANKING TOP 10</h3>
+	        <table>
+	            <colgroup>
+	                <col style="width:10%" />
+	                <col style="width:30%" />
+	                <col style="width:40%" />
+	                <col style="width:20%" />
+	            </colgroup>
+	            <thead>
+	                <tr>
+	                    <th>No.</th>
+	                    <th>Score</th>
+	                    <th>Name</th>
+	                    <th>Time</th>
+	                </tr>
+	            </thead>
+	            <tbody id="scoreList">
+	                ${scores}
+	            </tbody>
+	        </table>
+	        <div class="modal__footer">
+	            <button id="start">${startName || 'TRY AGAIN'}</button>
+	        </div>
+	    </div>
+	</div>`;
+	    }
+	}
+	
+	module.exports = Score;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const brickTypes = __webpack_require__(2);
+	const CONST = __webpack_require__(1);
+	
+	class Brick {
+	    constructor(type) {
+	        this.info = {
+	            type: type,
+	            rotate : 0,
+	            shape: brickTypes[type],
+	            offset: [ Math.floor(CONST.COL / 2) - 1, CONST.HIDDEN_ROW - 1 ]
+	        };
+	        this.setPos(0, 0);
+	    }
+	    setPos(dx, dy) {
+	        this.info.offset = [ this.info.offset[0] + dx, this.info.offset[1] + dy ];
+	        this.pos = this.info.shape[this.info.rotate].map(arr=> [
+	            arr[0] + this.info.offset[0],
+	            arr[1] + this.info.offset[1]
+	        ]);
+	    }
+	    rotate(cw = 'cw') {
+	        this.info.rotate = (this.info.rotate + (cw === 'cw' ? 1 : 3)) % 4;
+	        this.setPos(0, 0);
+	    }
+	    isAvailable(bg) {
+	        return this.pos.every(arr=>
+	            arr[0] >= 0 &&
+	            arr[0] < CONST.COL &&
+	            arr[1] >= 0 &&
+	            arr[1] < CONST.ROW + CONST.HIDDEN_ROW &&
+	            bg[arr[1]][arr[0]].type === null
+	        )
+	    }
+	    move(dir, bg) {
+	        let pos = [];
+	        if(dir === 'up') {
+	            this.rotate('cw');
+	            if(!this.isAvailable(bg)) this.rotate('ccw');
+	            return false;
+	        }
+	
+	        switch(dir) {
+	            case 'left': pos = [-1, 0]; break;
+	            case 'right': pos = [1, 0]; break;
+	            case 'down': pos = [0, 1]; break;
+	        }
+	        this.setPos(...pos);
+	        const availability = this.isAvailable(bg);
+	        if(!availability) {
+	            this.setPos(...pos.map(v=> v*-1));
+	            if(dir === 'down') return true;
+	        }
+	        return false;
+	    }
+	}
+	
+	module.exports = Brick;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const { bgTemplate, defaultBg } = __webpack_require__(11);
+	const nextTemplate = __webpack_require__(12);
+	const Brick = __webpack_require__(9);
+	const { getTime } = __webpack_require__(3);
+	const CONST = __webpack_require__(1);
+	
+	const nullRow = [...'0'.repeat(CONST.COL)].map(v=>({type: null}));
+	
+	class Play {
+	    constructor(endCallback) {
+	        this.dom = {
+	            main: document.getElementById('main'),
+	            score: document.getElementById('score'),
+	            count: document.getElementById('count'),
+	            time: document.getElementById('time'),
+	            next: document.getElementById('next')
+	        }
+	        this.startGame = this.startGame.bind(this);
+	        this.endCallback = endCallback;
+	        this.endGame = this.endGame.bind(this);
+	        this.keyEventHandler = this.keyEventHandler.bind(this);
+	        this.renderPlayTime = this.renderPlayTime.bind(this);
+	        this.moveDown = this.moveDown.bind(this);
+	        this.resetGame();
+	        this.keyState = {};
+	        this.fireUp = false;
+	    }
+	
+	    resetGame() {
+	        this.speed = 1;
+	        this.score = 0;
+	        this.count = 0;
+	        this.time = 0;
+	        this.keyEventWatchTimer = null;
+	        this.moveTimer = null;
+	        this.playTimer = null;
+	        this.brick = null;
+	        this.bg = defaultBg.map(row=>[...row]);
+	        this.dom.next.innerHTML = nextTemplate(-1);
+	        this.dom.main.innerHTML = bgTemplate(this.bg);
+	        this.dom.time.innerText = getTime(this.time);
+	        this.dom.score.innerText = this.score;
+	        this.dom.count.innerText = this.count;
+	    }
+	
+	    startGame() {
+	        this.resetGame();
+	        this.nextBrickIndex = Math.floor(Math.random()* CONST.BRICK_TYPES);
+	        this.addNewBrick();
+	        this.playTimer = setInterval(this.renderPlayTime, 1000);
+	        this.keyEventWatchTimer = setInterval(this.keyEventHandler, 75);
+	        window.addEventListener('keydown', this.keyEventListener.bind(this), true);
+	        window.addEventListener('keyup', this.keyEventListener.bind(this), true);
+	    }
+	
+	    keyEventListener(e) {
+	        let bool = false;
+	        if(e.type === 'keydown') bool = true;
+	        const keyCode = e.keyCode || e.which;
+	        this.keyState[keyCode] = bool;
+	        if(!bool && CONST.KEYBOARD_NAME[keyCode] === 'up') this.fireUp = false;
+	    }
+	
+	    keyEventHandler() {
+	        const keys = Object.keys(this.keyState);
+	        keys.forEach(v=> {
+	            if(this.keyState[v]) {
+	                const key = CONST.KEYBOARD_NAME[v];
+	                switch(key) {
+	                    case 'down': this.moveDown(); return;
+	                    case 'left':
+	                    case 'right':
+	                        this.removeBrick();
+	                        this.brick.move(key, this.bg);
+	                        this.renderMain();
+	                        return;
+	                    case 'up':
+	                        if(!this.fireUp) {
+	                            this.fireUp = true;
+	                            this.removeBrick();
+	                            this.brick.move(key, this.bg);
+	                            this.renderMain();
+	                        }
+	                        return;
+	                }
+	            }
+	        });
+	    }
+	
+	    endGame() {
+	        window.removeEventListener('keydown', this.keyEventListener);
+	        window.removeEventListener('keyup', this.keyEventListener);
+	        clearInterval(this.playTimer);
+	        clearInterval(this.moveTimer);
+	        clearInterval(this.keyEventWatchTimer);
+	        this.brick = null;
+	        this.endCallback(null, {score: this.score, time: this.time, count: this.count}, 'TRY AGAIN');
+	    }
+	
+	    renderMain() {
+	        this.showBrick();
+	        this.dom.main.innerHTML = bgTemplate(this.bg);
+	    }
+	
+	    renderPlayTime() {
+	        this.dom.time.innerText = getTime(++this.time);
+	    }
+	
+	    renderScore() {
+	        this.speed = Math.ceil((this.count || 1) / 10);
+	        this.dom.count.innerText = this.count;
+	        this.dom.score.innerText = this.score;
+	    }
+	
+	    renderNext() {
+	        this.dom.next.innerHTML = nextTemplate(this.nextBrickIndex)
+	    }
+	
+	    addNewBrick() {
+	        clearInterval(this.moveTimer);
+	        const interval = Math.floor( CONST.INITIAL_DURATION * (
+	            1 - Math.log(this.speed) / CONST.DECREASE_DURATION_FACTOR
+	        ));
+	        this.moveTimer = setInterval(this.moveDown, interval);
+	        this.brick = new Brick(this.nextBrickIndex);
+	        this.nextBrickIndex = Math.floor(Math.random() * CONST.BRICK_TYPES);
+	        this.renderMain();
+	        this.renderNext();
+	    }
+	
+	    removeCompleted() {
+	        let count = 0;
+	        const newBg = this.bg.filter((row, i)=> {
+	            if(row.every(col => col.type !== null)) {
+	                count+= 1;
+	                return false;
+	            }
+	            return true;
+	        });
+	        this.score += CONST.SCORE_POINT[count];
+	        this.count += count;
+	        this.renderScore();
+	        this.bg = [...'0'.repeat(count)].map(()=> [...'0'.repeat(CONST.COL)].map(()=>({ type: null }))).concat(newBg);
+	    }
+	
+	    moveEnd() {
+	        this.removeCompleted();
+	        if(this.brick.pos.some(arr=>
+	            arr[1] <= CONST.HIDDEN_ROW
+	            && arr[0] >= 2 && arr[0] < 6
+	        )) {
+	            this.endGame();
+	            return;
+	        }
+	        this.bg = this.bg.map((v,i)=> i >= CONST.HIDDEN_ROW ? v : [...nullRow]);
+	        this.addNewBrick();
+	    }
+	
+	    moveDown() {
+	        this.removeBrick();
+	        const isFinished = this.brick.move('down', this.bg);
+	        this.renderMain();
+	        if(isFinished) this.moveEnd();
+	    }
+	
+	    removeBrick() {
+	        this.brick.pos.forEach(arr => {
+	            if(this.bg[arr[1]] && this.bg[arr[1]][arr[0]]) this.bg[arr[1]][arr[0]] = {
+	                type: null
+	            }
+	        });
+	    }
+	
+	    showBrick() {
+	        this.brick.pos.forEach(arr => {
+	            if(this.bg[arr[1]] && this.bg[arr[1]][arr[0]]) this.bg[arr[1]][arr[0]] = {
+	                type: this.brick.info.type
+	            }
+	        });
+	    }
+	
+	}
+	
+	module.exports = Play;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const ClassNames = __webpack_require__(4);
+	const CONST = __webpack_require__(1);
+	
+	const bgTemplate = (bg) => {
+	    return `<div class="tetris__grid">
+	    ${bg.reduce((rows, row, i)=>
+	        `${rows}${row.reduce((cols, col, j)=>
+	            `${cols}<div class="${ClassNames('tetris__col', {
+	                [`type${col.type}`]: Number.isFinite(col.type),
+	                hidden: i < CONST.HIDDEN_ROW
+	            })}"></div>`
+	        , '')}`
+	    , '')}
+	    </div>
+	`};
+	
+	const defaultBg = [...'0'.repeat(CONST.ROW + CONST.HIDDEN_ROW)].map(v=>
+	    [...'0'.repeat(CONST.COL)].map(vv=> ({ type: null }))
+	);
+	
+	module.exports = {
+	    bgTemplate,
+	    defaultBg
+	}
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const brickTypes = __webpack_require__(2);
+	
+	const brickData = ()=> [...'0'.repeat(4)].map(() =>
+	    [...'0'.repeat(4)].map(()=> '<div class="tetris__col"></div>')
+	);
+	
+	const nextTemplate = (brickIndex) => {
+	    const brickGrid = brickTypes[brickIndex][0].map(arr=> [arr[0]+1, arr[1]+2]);
+	    const nextBrick = brickData();
+	    if(brickIndex > -1) brickGrid.forEach(v =>
+	        nextBrick[v[1]][v[0]] = `<div class="tetris__col type${brickIndex}"></div>`
+	    );
+	    return nextBrick.reduce((rows, row) =>
+	        `${rows}${row.reduce((cols, col)=>
+	            `${cols}${col}`
+	        , '')}`
+	    , '');
+	}
+	
+	module.exports = nextTemplate;
+
+
+/***/ }
+/******/ ]);
 //# sourceMappingURL=bundle.js.map
