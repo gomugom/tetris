@@ -4,7 +4,7 @@ const blockData = ()=> [0, 0, 0, 0].map((_, y) =>
     [0, 0, 0, 0].map((__, x)=> `<div class="tetris__col" style="left:${x*25}px; top:${y*25}px"></div>`)
 );
 
-const nextTemplate = (blockIndex) => {
+const nextBlock = (blockIndex) => {
     const blockGrid = blockTypes[blockIndex][0].map(arr=> [arr[0]+1, arr[1]+2]);
     const nextBlock = blockData();
     if(blockIndex > 0) blockGrid.forEach(v =>
@@ -17,4 +17,4 @@ const nextTemplate = (blockIndex) => {
     , '');
 }
 
-module.exports = nextTemplate;
+module.exports = nextBlock;

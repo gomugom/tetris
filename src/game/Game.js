@@ -1,5 +1,5 @@
-const { bgTemplate, defaultBg } = require('./templates/game-bg');
-const nextTemplate = require('./templates/game-next');
+const { bgTemplate, defaultBg } = require('./templates/backgrounds');
+const nextBlock = require('./templates/nextBlock');
 const Block = require('./Block');
 const { getTime } = require('../util');
 const CONST = require('./constants');
@@ -17,7 +17,7 @@ class Game {
         }
         this.endCallback = endCallback;
         this.keyState = {};
-        this.fireUp = false;
+        this.fireKeyUp = false;
 
         this.renderPlayTime = this.renderPlayTime.bind(this);
         this.startGame = this.startGame.bind(this);
@@ -38,7 +38,7 @@ class Game {
         this.GameTimer = null;
         this.block = 0;
         this.bg = defaultBg.map(row=>[...row]);
-        this.dom.next.innerHTML = nextTemplate(0);
+        this.dom.next.innerHTML = nextBlock(0);
         this.dom.main.innerHTML = bgTemplate(this.bg);
         this.dom.time.innerText = getTime(this.time);
         this.dom.score.innerText = this.score;
@@ -81,7 +81,7 @@ class Game {
     }
 
     renderNext() {
-        this.dom.next.innerHTML = nextTemplate(this.nextBlockIndex)
+        this.dom.next.innerHTML = nextBlock(this.nextBlockIndex)
     }
 
     keyEventListener(e) {
@@ -89,7 +89,7 @@ class Game {
         if(e.type === 'keydown') bool = true;
         const keyCode = e.keyCode || e.which;
         this.keyState[keyCode] = bool;
-        if(!bool && CONST.KEYBOARD_NAME[keyCode] === 'up') this.fireUp = false;
+        if(!bool && CONST.KEYBOARD_NAME[keyCode] === 'up') this.fireKeyUp = false;
     }
 
     keyEventHandler() {
@@ -104,8 +104,8 @@ class Game {
                         this.move(key, this.bg);
                         return;
                     case 'up':
-                        if(!this.fireUp) {
-                            this.fireUp = true;
+                        if(!this.fireKeyUp) {
+                            this.fireKeyUp = true;
                             this.move(key, this.bg);
                         }
                         return;
