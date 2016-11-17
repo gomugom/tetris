@@ -1,0 +1,32 @@
+{
+  "name": "es6-tetris",
+  "author": "gomugom",
+  "description": "ES6 Tetris",
+  "license": "MIT",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gomugom/tetris"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=development node ./devtools/server.js",
+    "build": "cross-env NODE_ENV=production webpack --verbose --colors --display-error-details --config ./devtools/webpack.config.js"
+  },
+  "dependencies": {
+    "classnames": "^2.2.5"
+  },
+  "devDependencies": {
+    "cross-env": "^3.1.3",
+    "css-loader": "^0.25.0",
+    "express": "^4.14.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "node-sass": "^3.10.1",
+    "path": "^0.12.7",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.2",
+    "webpack-dev-middleware": "^1.7.0",
+    "webpack-hot-middleware": "^2.12.2",
+    "webpack-middleware": "^1.5.1"
+  }
+}
