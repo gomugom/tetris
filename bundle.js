@@ -68,7 +68,12 @@
 	const DECREASE_DURATION_FACTOR = 4.5;
 	const BLOCK_TYPES = 7;
 	
-	module.exports = {
+	const getEmptyArray = rows => [...'0'.repeat(rows)].map(()=> new Array(COL).fill(0));
+	
+	const GET_DEFAULT_HIDDEN_ROWS = ()=> getEmptyArray(HIDDEN_ROW);
+	const DEFAULT_BLOCKS = getEmptyArray(ROW + HIDDEN_ROW);
+	
+	const CONST = {
 	    KEYBOARD_NAME,
 	    SCORE_POINT,
 	    COL,
@@ -76,8 +81,14 @@
 	    HIDDEN_ROW,
 	    INITIAL_DURATION,
 	    DECREASE_DURATION_FACTOR,
-	    BLOCK_TYPES
+	    BLOCK_TYPES,
+	    GET_DEFAULT_HIDDEN_ROWS,
+	    DEFAULT_BLOCKS
 	}
+	
+	Object.freeze(CONST);
+	
+	module.exports = CONST;
 
 
 /***/ },
@@ -343,7 +354,7 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const blockTypes = __webpack_require__(2);
+	const BLOCK_TYPES = __webpack_require__(2);
 	const CONST = __webpack_require__(1);
 	
 	class Block {
@@ -351,36 +362,40 @@
 	        this.info = {
 	            type,
 	            rotate : 0,
-	            shape: blockTypes[type],
+	            shape: BLOCK_TYPES[type],
 	            offset: [ Math.floor(CONST.COL / 2) - 1, CONST.HIDDEN_ROW - 1 ]
 	        };
 	        this.setPos(0, 0);
 	    }
+	
 	    setPos(dx, dy) {
 	        this.info.offset = [ this.info.offset[0] + dx, this.info.offset[1] + dy ];
-	        this.pos = this.info.shape[this.info.rotate].map(arr=> [
-	            arr[0] + this.info.offset[0],
-	            arr[1] + this.info.offset[1]
+	        this.pos = this.info.shape[this.info.rotate].map(([x, y])=> [
+	            x + this.info.offset[0],
+	            y + this.info.offset[1]
 	        ]);
 	    }
+	
+	    checkAvailability(frame) {
+	        return this.pos.every(([x, y])=>
+	            x >= 0 &&
+	            x < CONST.COL &&
+	            y >= 0 &&
+	            y < CONST.ROW + CONST.HIDDEN_ROW &&
+	            frame[y][x] === 0
+	        )
+	    }
+	
 	    rotate(cw = 'cw') {
 	        this.info.rotate = (this.info.rotate + (cw === 'cw' ? 1 : 3)) % 4;
 	        this.setPos(0, 0);
 	    }
-	    isAvailable(bg) {
-	        return this.pos.every(arr=>
-	            arr[0] >= 0 &&
-	            arr[0] < CONST.COL &&
-	            arr[1] >= 0 &&
-	            arr[1] < CONST.ROW + CONST.HIDDEN_ROW &&
-	            bg[arr[1]][arr[0]] === 0
-	        )
-	    }
-	    move(dir, bg) {
+	
+	    transfer(dir, frame) {
 	        let pos = [];
 	        if(dir === 'up') {
 	            this.rotate('cw');
-	            if(!this.isAvailable(bg)) this.rotate('ccw');
+	            if(!this.checkAvailability(frame)) this.rotate('ccw');
 	            return false;
 	        }
 	
@@ -390,8 +405,8 @@
 	            case 'down': pos = [0, 1]; break;
 	        }
 	        this.setPos(...pos);
-	        const availability = this.isAvailable(bg);
-	        if(!availability) {
+	        const isAvailable = this.checkAvailability(frame);
+	        if(!isAvailable) {
 	            this.setPos(...pos.map(v=> v*-1));
 	            if(dir === 'down') return true;
 	        }
@@ -406,13 +421,11 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const { bgTemplate, defaultBg } = __webpack_require__(8);
-	const nextTemplate = __webpack_require__(9);
+	const generateBlocksHTML = __webpack_require__(8);
+	const nextBlock = __webpack_require__(9);
+	const CONST = __webpack_require__(1);
 	const Block = __webpack_require__(6);
 	const { getTime } = __webpack_require__(3);
-	const CONST = __webpack_require__(1);
-	
-	const emptyRow = new Array(CONST.COL).fill(0);
 	
 	class Game {
 	    constructor(endCallback) {
@@ -425,7 +438,7 @@
 	        }
 	        this.endCallback = endCallback;
 	        this.keyState = {};
-	        this.fireUp = false;
+	        this.fireKeyUp = false;
 	
 	        this.renderPlayTime = this.renderPlayTime.bind(this);
 	        this.startGame = this.startGame.bind(this);
@@ -442,12 +455,12 @@
 	        this.count = 0;
 	        this.time = 0;
 	        this.keyEventWatchTimer = null;
-	        this.moveTimer = null;
+	        this.tick = null;
 	        this.GameTimer = null;
 	        this.block = 0;
-	        this.bg = defaultBg.map(row=>[...row]);
-	        this.dom.next.innerHTML = nextTemplate(0);
-	        this.dom.main.innerHTML = bgTemplate(this.bg);
+	        this.frame = CONST.DEFAULT_BLOCKS.map(row=>[...row]);
+	        this.dom.main.innerHTML = generateBlocksHTML(this.frame);
+	        this.dom.next.innerHTML = nextBlock(0);
 	        this.dom.time.innerText = getTime(this.time);
 	        this.dom.score.innerText = this.score;
 	        this.dom.count.innerText = this.count;
@@ -467,15 +480,15 @@
 	        window.removeEventListener('keydown', this.keyEventListener);
 	        window.removeEventListener('keyup', this.keyEventListener);
 	        clearInterval(this.GameTimer);
-	        clearInterval(this.moveTimer);
+	        clearInterval(this.tick);
 	        clearInterval(this.keyEventWatchTimer);
-	        this.block = 0;
+	        this.block = null;
 	        this.endCallback(null, {score: this.score, time: this.time, count: this.count}, 'TRY AGAIN');
 	    }
 	
 	    renderMain() {
 	        this.showBlock();
-	        this.dom.main.innerHTML = bgTemplate(this.bg);
+	        this.dom.main.innerHTML = generateBlocksHTML(this.frame);
 	    }
 	
 	    renderPlayTime() {
@@ -489,7 +502,7 @@
 	    }
 	
 	    renderNext() {
-	        this.dom.next.innerHTML = nextTemplate(this.nextBlockIndex)
+	        this.dom.next.innerHTML = nextBlock(this.nextBlockIndex)
 	    }
 	
 	    keyEventListener(e) {
@@ -497,7 +510,7 @@
 	        if(e.type === 'keydown') bool = true;
 	        const keyCode = e.keyCode || e.which;
 	        this.keyState[keyCode] = bool;
-	        if(!bool && CONST.KEYBOARD_NAME[keyCode] === 'up') this.fireUp = false;
+	        if(!bool && CONST.KEYBOARD_NAME[keyCode] === 'up') this.fireKeyUp = false;
 	    }
 	
 	    keyEventHandler() {
@@ -509,12 +522,12 @@
 	                    case 'down': this.moveDown(); return;
 	                    case 'left':
 	                    case 'right':
-	                        this.move(key, this.bg);
+	                        this.transfer(key);
 	                        return;
 	                    case 'up':
-	                        if(!this.fireUp) {
-	                            this.fireUp = true;
-	                            this.move(key, this.bg);
+	                        if(!this.fireKeyUp) {
+	                            this.fireKeyUp = true;
+	                            this.transfer(key);
 	                        }
 	                        return;
 	                }
@@ -522,71 +535,82 @@
 	        });
 	    }
 	
-	    move(key, bg) {
+	    transfer(key) {
 	        this.removeBlock();
-	        this.block.move(key, this.bg);
+	        this.block.transfer(key, this.frame);
 	        this.renderMain();
 	    }
 	
 	    moveDown() {
 	        this.removeBlock();
-	        const isFinished = this.block.move('down', this.bg);
+	        const isFinished = this.block.transfer('down', this.frame);
 	        this.renderMain();
 	        if(isFinished) this.moveEnd();
 	    }
 	
 	    moveEnd() {
 	        this.removeCompleted();
-	        if(this.block.pos.some(arr=>
-	            arr[1] <= CONST.HIDDEN_ROW
-	            && arr[0] >= 2 && arr[0] < 6
+	        if(this.block.pos.some(([x, y])=>
+	            y <= CONST.HIDDEN_ROW
+	            && x >= 3
+	            && x < 6
 	        )) {
 	            this.endGame();
 	            return;
 	        }
-	        this.bg = this.bg.map((v,i)=> i >= CONST.HIDDEN_ROW ? v : [...emptyRow]);
 	        this.addNewBlock();
 	    }
 	
+	    removeCompleted() {
+	        let completedRowsLength = 0;
+	        const uncompletedRowsArray = this.frame.filter((row, i)=> {
+	            if(row.every(col => col > 0)) {
+	                completedRowsLength += 1;
+	                return false;
+	            }
+	            return true;
+	        });
+	        this.score += CONST.SCORE_POINT[completedRowsLength];
+	        this.count += completedRowsLength;
+	        this.renderScore();
+	        this.frame = [
+	            ...CONST.GET_DEFAULT_HIDDEN_ROWS()
+	            , ...uncompletedRowsArray.slice(CONST.HIDDEN_ROW - completedRowsLength)
+	        ];
+	    }
+	
 	    addNewBlock() {
-	        clearInterval(this.moveTimer);
+	        clearInterval(this.tick);
 	        const interval = Math.floor( CONST.INITIAL_DURATION * (
 	            1 - Math.log(this.speed) / CONST.DECREASE_DURATION_FACTOR
 	        ));
-	        this.moveTimer = setInterval(this.moveDown, interval);
+	        this.tick = setInterval(this.moveDown, interval);
 	        this.block = new Block(this.nextBlockIndex);
 	        this.nextBlockIndex = Math.ceil(Math.random() * CONST.BLOCK_TYPES);
 	        this.renderMain();
 	        this.renderNext();
 	    }
 	
-	    removeCompleted() {
-	        let completedRows = 0;
-	        const uncompletedBg = this.bg.filter((row, i)=> {
-	            if(row.every(col => col > 0)) {
-	                completedRows += 1;
-	                return false;
-	            }
-	            return true;
-	        });
-	        this.score += CONST.SCORE_POINT[completedRows];
-	        this.count += completedRows;
-	        this.renderScore();
-	        this.bg = [...[...'0'.repeat(completedRows)].map(()=> [...emptyRow]), ...uncompletedBg];
-	    }
-	
 	    removeBlock() {
-	        this.block.pos.forEach(arr => {
-	            if(this.bg[arr[1]] !== undefined && this.bg[arr[1]] !== null && this.bg[arr[1]][arr[0]] > 0) {
-	                this.bg[arr[1]][arr[0]] = 0;
+	        this.block.pos.forEach(([x, y]) => {
+	            if(
+	                this.frame[y] !== undefined
+	                && this.frame[y] !== null
+	                && this.frame[y][x] > 0
+	            ) {
+	                this.frame[y][x] = 0;
 	            }
 	        });
 	    }
 	
 	    showBlock() {
-	        this.block.pos.forEach(arr => {
-	            if(this.bg[arr[1]] !== undefined && this.bg[arr[1]] !== null && this.bg[arr[1]][arr[0]] === 0) {
-	                this.bg[arr[1]][arr[0]] = this.block.info.type
+	        this.block.pos.forEach(([x, y]) => {
+	            if(
+	                this.frame[y] !== undefined
+	                && this.frame[y] !== null
+	                && this.frame[y][x] === 0
+	            ) {
+	                this.frame[y][x] = this.block.info.type
 	            }
 	        });
 	    }
@@ -601,32 +625,25 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const ClassNames = __webpack_require__(4);
-	const CONST = __webpack_require__(1);
+	const { COL, ROW, HIDDEN_ROW } = __webpack_require__(1);
 	
-	const bgTemplate = bg =>
-	`<div class="tetris__grid" style="width:${CONST.COL*25}px; height:${CONST.ROW*25}px">
-	${bg.reduce((rows, row, i)=>
+	const generateBlocksHTML = frame =>
+	`<div class="tetris__grid" style="width:${COL * 25}px; height:${ROW * 25}px">
+	${frame.reduce((rows, row, i)=>
 	    `${rows}${row.reduce((cols, col, j)=>
 	        `${cols}<div
 	            class="${ClassNames('tetris__col', {
 	                [`type${col}`]: Number.isFinite(col),
-	                hidden: i < CONST.HIDDEN_ROW
+	                hidden: i < HIDDEN_ROW
 	            })}"
-	            style="left:${j*25}px; top:${(i-CONST.HIDDEN_ROW)*25}px"
+	            style="left:${j*25}px; top:${(i - HIDDEN_ROW)*25}px"
 	        ></div>`
 	    , '')}`
 	, '')}
 	</div>
 	`;
 	
-	const defaultBg = [...'0'.repeat(CONST.ROW + CONST.HIDDEN_ROW)].map(()=>
-	    new Array(CONST.COL).fill(0)
-	);
-	
-	module.exports = {
-	    bgTemplate,
-	    defaultBg
-	}
+	module.exports = generateBlocksHTML;
 
 
 /***/ },
@@ -639,11 +656,11 @@
 	    [0, 0, 0, 0].map((__, x)=> `<div class="tetris__col" style="left:${x*25}px; top:${y*25}px"></div>`)
 	);
 	
-	const nextTemplate = (blockIndex) => {
-	    const blockGrid = blockTypes[blockIndex][0].map(arr=> [arr[0]+1, arr[1]+2]);
+	const nextBlock = (blockIndex) => {
+	    const blockGrid = blockTypes[blockIndex][0].map(([x, y])=> [x+1, y+2]);
 	    const nextBlock = blockData();
-	    if(blockIndex > 0) blockGrid.forEach(v =>
-	        nextBlock[v[1]][v[0]] = `<div class="tetris__col type${blockIndex}" style="left:${v[0]*25}px; top:${v[1]*25}px"></div>`
+	    if(blockIndex > 0) blockGrid.forEach(([x, y]) =>
+	        nextBlock[y][x] = `<div class="tetris__col type${blockIndex}" style="left:${x*25}px; top:${y*25}px"></div>`
 	    );
 	    return nextBlock.reduce((rows, row) =>
 	        `${rows}${row.reduce((cols, col)=>
@@ -652,7 +669,7 @@
 	    , '');
 	}
 	
-	module.exports = nextTemplate;
+	module.exports = nextBlock;
 
 
 /***/ },
