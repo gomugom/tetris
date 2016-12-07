@@ -15,7 +15,12 @@ const INITIAL_DURATION = 1000;
 const DECREASE_DURATION_FACTOR = 4.5;
 const BLOCK_TYPES = 7;
 
-module.exports = {
+const getEmptyArray = rows => [...'0'.repeat(rows)].map(()=> new Array(COL).fill(0));
+
+const GET_DEFAULT_HIDDEN_ROWS = ()=> getEmptyArray(HIDDEN_ROW);
+const DEFAULT_BLOCKS = getEmptyArray(ROW + HIDDEN_ROW);
+
+const CONST = {
     KEYBOARD_NAME,
     SCORE_POINT,
     COL,
@@ -23,5 +28,11 @@ module.exports = {
     HIDDEN_ROW,
     INITIAL_DURATION,
     DECREASE_DURATION_FACTOR,
-    BLOCK_TYPES
+    BLOCK_TYPES,
+    GET_DEFAULT_HIDDEN_ROWS,
+    DEFAULT_BLOCKS
 }
+
+Object.freeze(CONST);
+
+module.exports = CONST;

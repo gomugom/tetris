@@ -1,10 +1,8 @@
-const { bgTemplate, defaultBg } = require('./templates/backgrounds');
-const nextBlock = require('./templates/nextBlock');
+const generateBlocksHTML = require('./templates/generateBlocksHTML');
+const nextBlock = require('./templates/generateNextBlockHTML');
+const CONST = require('./constants/CONST');
 const Block = require('./Block');
 const { getTime } = require('../util');
-const CONST = require('./constants');
-
-const emptyRow = new Array(CONST.COL).fill(0);
 
 class Game {
     constructor(endCallback) {
@@ -34,12 +32,12 @@ class Game {
         this.count = 0;
         this.time = 0;
         this.keyEventWatchTimer = null;
-        this.moveTimer = null;
+        this.tick = null;
         this.GameTimer = null;
         this.block = 0;
-        this.bg = defaultBg.map(row=>[...row]);
+        this.frame = CONST.DEFAULT_BLOCKS.map(row=>[...row]);
+        this.dom.main.innerHTML = generateBlocksHTML(this.frame);
         this.dom.next.innerHTML = nextBlock(0);
-        this.dom.main.innerHTML = bgTemplate(this.bg);
         this.dom.time.innerText = getTime(this.time);
         this.dom.score.innerText = this.score;
         this.dom.count.innerText = this.count;
@@ -59,15 +57,15 @@ class Game {
         window.removeEventListener('keydown', this.keyEventListener);
         window.removeEventListener('keyup', this.keyEventListener);
         clearInterval(this.GameTimer);
-        clearInterval(this.moveTimer);
+        clearInterval(this.tick);
         clearInterval(this.keyEventWatchTimer);
-        this.block = 0;
+        this.block = null;
         this.endCallback(null, {score: this.score, time: this.time, count: this.count}, 'TRY AGAIN');
     }
 
     renderMain() {
         this.showBlock();
-        this.dom.main.innerHTML = bgTemplate(this.bg);
+        this.dom.main.innerHTML = generateBlocksHTML(this.frame);
     }
 
     renderPlayTime() {
@@ -101,12 +99,12 @@ class Game {
                     case 'down': this.moveDown(); return;
                     case 'left':
                     case 'right':
-                        this.move(key, this.bg);
+                        this.transfer(key);
                         return;
                     case 'up':
                         if(!this.fireKeyUp) {
                             this.fireKeyUp = true;
-                            this.move(key, this.bg);
+                            this.transfer(key);
                         }
                         return;
                 }
@@ -114,71 +112,82 @@ class Game {
         });
     }
 
-    move(key, bg) {
+    transfer(key) {
         this.removeBlock();
-        this.block.move(key, this.bg);
+        this.block.transfer(key, this.frame);
         this.renderMain();
     }
 
     moveDown() {
         this.removeBlock();
-        const isFinished = this.block.move('down', this.bg);
+        const isFinished = this.block.transfer('down', this.frame);
         this.renderMain();
         if(isFinished) this.moveEnd();
     }
 
     moveEnd() {
         this.removeCompleted();
-        if(this.block.pos.some(arr=>
-            arr[1] <= CONST.HIDDEN_ROW
-            && arr[0] >= 2 && arr[0] < 6
+        if(this.block.pos.some(([x, y])=>
+            y <= CONST.HIDDEN_ROW
+            && x >= 3
+            && x < 6
         )) {
             this.endGame();
             return;
         }
-        this.bg = this.bg.map((v,i)=> i >= CONST.HIDDEN_ROW ? v : [...emptyRow]);
         this.addNewBlock();
     }
 
+    removeCompleted() {
+        let completedRowsLength = 0;
+        const uncompletedRowsArray = this.frame.filter((row, i)=> {
+            if(row.every(col => col > 0)) {
+                completedRowsLength += 1;
+                return false;
+            }
+            return true;
+        });
+        this.score += CONST.SCORE_POINT[completedRowsLength];
+        this.count += completedRowsLength;
+        this.renderScore();
+        this.frame = [
+            ...CONST.GET_DEFAULT_HIDDEN_ROWS()
+            , ...uncompletedRowsArray.slice(CONST.HIDDEN_ROW - completedRowsLength)
+        ];
+    }
+
     addNewBlock() {
-        clearInterval(this.moveTimer);
+        clearInterval(this.tick);
         const interval = Math.floor( CONST.INITIAL_DURATION * (
             1 - Math.log(this.speed) / CONST.DECREASE_DURATION_FACTOR
         ));
-        this.moveTimer = setInterval(this.moveDown, interval);
+        this.tick = setInterval(this.moveDown, interval);
         this.block = new Block(this.nextBlockIndex);
         this.nextBlockIndex = Math.ceil(Math.random() * CONST.BLOCK_TYPES);
         this.renderMain();
         this.renderNext();
     }
 
-    removeCompleted() {
-        let completedRows = 0;
-        const uncompletedBg = this.bg.filter((row, i)=> {
-            if(row.every(col => col > 0)) {
-                completedRows += 1;
-                return false;
-            }
-            return true;
-        });
-        this.score += CONST.SCORE_POINT[completedRows];
-        this.count += completedRows;
-        this.renderScore();
-        this.bg = [...[...'0'.repeat(completedRows)].map(()=> [...emptyRow]), ...uncompletedBg];
-    }
-
     removeBlock() {
-        this.block.pos.forEach(arr => {
-            if(this.bg[arr[1]] !== undefined && this.bg[arr[1]] !== null && this.bg[arr[1]][arr[0]] > 0) {
-                this.bg[arr[1]][arr[0]] = 0;
+        this.block.pos.forEach(([x, y]) => {
+            if(
+                this.frame[y] !== undefined
+                && this.frame[y] !== null
+                && this.frame[y][x] > 0
+            ) {
+                this.frame[y][x] = 0;
             }
         });
     }
 
     showBlock() {
-        this.block.pos.forEach(arr => {
-            if(this.bg[arr[1]] !== undefined && this.bg[arr[1]] !== null && this.bg[arr[1]][arr[0]] === 0) {
-                this.bg[arr[1]][arr[0]] = this.block.info.type
+        this.block.pos.forEach(([x, y]) => {
+            if(
+                this.frame[y] !== undefined
+                && this.frame[y] !== null
+                && this.frame[y][x] === 0
+            ) {
+                this.frame[y][x] = this.block.info.type
             }
         });
     }
